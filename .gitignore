@@ -1,0 +1,8 @@
+# IDE Config Files
+.vscode/
+.idea/
+
+# Output Files
+*.exe
+*.out
+
