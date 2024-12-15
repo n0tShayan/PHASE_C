@@ -73,6 +73,6 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 ## Acknowledgments  
-Thanks to the post-quantum cryptography community for inspiring research and tools that guided this project.  
+
 
 **Contact**: For questions or suggestions, please open an issue or contact the me on sahibzadashayaan@gmail.com.
