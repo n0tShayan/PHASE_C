@@ -1,1 +1,2 @@
-//creating a client file for the code to handle multiple clients using Scoket programmming.
+//creating a client file for the code to handle multiple clients using Scoket programmming
+// refernces for the code are https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
