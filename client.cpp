@@ -8,6 +8,28 @@
 #include <thread>
 
 
+#pragma comment(lib, "ws2_32.lib")
+using namespace std;
+#define PORT 8080
+
+void handle_server_response(SOCKET clientSocket) {
+    char buffer[1024];
+    int bytes_received;
+
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        bytes_received = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+        if (bytes_received <= 0) {
+            cout << "Disconnected from server.\n";
+            break;
+        }
+
+        cout << "Server: " << buffer << endl;
+    }
+}
+
+
 
 int main() {
     WSADATA wsa_data;
