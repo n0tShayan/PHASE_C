@@ -168,7 +168,8 @@ int main() {
         return 1;
     }
 
-
+    crypto.generateKeys(3);
+    cout << "Server started on port 8080...\n";
 
     while (true) {
         sockaddr_in client_addr;
