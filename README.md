@@ -37,8 +37,11 @@ Asad Shayan | Yahya Qadeer Dar | Rayyan Hassan Salman
    ```  
 3. Build the project:  
    ```bash  
-   cmake .. && make  
-   ```  
+   compile the code:  
+   ```bash
+    g++ server.cpp server_utils.cpp crypto.cpp -o server -lws2_32
+     g++ client.cpp -o client -lws2_32
+
 4. Run the application:  
    ```bash  
    ./phase_c  
@@ -50,8 +53,7 @@ Asad Shayan | Yahya Qadeer Dar | Rayyan Hassan Salman
 1. Generate a quantum-resistant key pair using the provided CLI or API.  
 2. Establish a secure channel via the post-quantum key exchange mechanism.  
 3. Encrypt and decrypt data using the encryption APIs.  
-
-Refer to the [documentation](docs/documentation.md) for comprehensive examples and usage details.  
+  
 
 ---
 
@@ -71,8 +73,5 @@ We welcome contributions! Please follow these steps:
 This project is licensed under the [MIT License](LICENSE).  
 
 ---
-
-## Acknowledgments  
-
 
 **Contact**: For questions or suggestions, please open an issue or contact the me on sahibzadashayaan@gmail.com.
