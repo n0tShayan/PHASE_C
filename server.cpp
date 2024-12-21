@@ -98,6 +98,15 @@ vector<SOCKET> clients;
 mutex clients_mutex;
 LatticeCrypto crypto(101);
 
+void sendPublicKey(SOCKET client_socket) {
+    const auto& publicKey = crypto.getPublicKey();
+    for (const auto& row : publicKey) {
+        for (int val : row) {
+            send(client_socket, reinterpret_cast<const char*>(&val), sizeof(val), 0);
+        }
+    }
+}
+
 void handle_client(SOCKET client_socket) {
     char buffer[1024];
     int bytes_received;
