@@ -123,15 +123,13 @@ void handle_client(SOCKET client_socket) {
             break;
         }
 
-        cout << "Message received: " << buffer << endl;
+        cout << "Received message: " << buffer << endl;
 
-        // Broadcast message to all other clients
+        // Echo the message back to the client
         lock_guard<mutex> lock(clients_mutex);
         for (SOCKET client : clients) {
             if (client != client_socket) {
-                if (send(client, buffer, bytes_received, 0) == SOCKET_ERROR) {
-                    cerr << "Error sending message to a client.\n";
-                }
+                send(client, buffer, bytes_received, 0);
             }
         }
     }
