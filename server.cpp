@@ -93,6 +93,11 @@ public:
     }
 };
 
+// Server-side code
+vector<SOCKET> clients;
+mutex clients_mutex;
+LatticeCrypto crypto(101);
+
 void handle_client(SOCKET client_socket) {
     char buffer[1024];
     int bytes_received;
