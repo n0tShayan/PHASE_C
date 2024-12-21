@@ -168,7 +168,7 @@ int main() {
         return 1;
     }
 
-    cout << "Server started on port 8080...\n";
+
 
     while (true) {
         sockaddr_in client_addr;
@@ -185,7 +185,9 @@ int main() {
             clients.push_back(client_socket);
         }
 
-        cout << "New client connected.\n";
+        cout << "New client connected. Sending public key.\n";
+        sendPublicKey(client_socket);
+
         thread(handle_client, client_socket).detach();
     }
 
