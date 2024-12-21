@@ -12,6 +12,11 @@ using namespace std;
 vector<SOCKET> clients;
 mutex clients_mutex;
 
+// Utility function for modular arithmetic
+int mod(int a, int b) {
+    return (a % b + b) % b;
+}
+
 void handle_client(SOCKET client_socket) {
     char buffer[1024];
     int bytes_received;
