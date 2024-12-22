@@ -43,6 +43,19 @@ void printReceivedMessage(const string &message) {
     cout << "\033[1;34m" << message << "\033[0m" << endl;
 }
 
+void handleServerResponse(SOCKET clientSocket) {
+    char buffer[1024];
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesReceived <= 0) {
+            cout << "\033[1;31mDisconnected from server.\033[0m" << endl;
+            break;
+        }
+        printReceivedMessage(buffer);
+    }
+}
+
 int main() {
     printBanner();
     printInstructions();
