@@ -37,14 +37,14 @@ int main() {
         cerr << "WSAStartup failed.\n";
         return -1;
     }
-
+    // initializing the socket
     SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == INVALID_SOCKET) {
         cerr << "Socket creation failed.\n";
         WSACleanup();
         return -1;
     }
-
+    //setting up the socket
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
@@ -56,12 +56,12 @@ int main() {
         WSACleanup();
         return -1;
     }
-
+    //sucesfully connected
     cout << "Connected to server.\n";
 
     // Thread to handle server responses
     thread(handle_server_response, clientSocket).detach();
-
+    //messade (bufer) stream
     char buffer[1024];
     while (true) {
         cout << "Enter message: ";
@@ -73,7 +73,7 @@ int main() {
 
         send(clientSocket, buffer, strlen(buffer), 0);
     }
-
+    //closing the socket
     closesocket(clientSocket);
     WSACleanup();
     return 0;
