@@ -25,7 +25,7 @@ void setConsoleColor(WORD color) {
 
 void printBanner() {
     setConsoleColor(11); 
-std::cout << "\033[1;36m" << R"(
+cout << "\033[1;36m" << R"(
 
   _____  _    _           _____ ______             _____ 
  |  __ \| |  | |   /\    / ____|  ____|           / ____|
@@ -38,39 +38,39 @@ std::cout << "\033[1;36m" << R"(
 )" << "\033[0m\n";
 
     setConsoleColor(14); // Yellow
-    std::cout << "<<<<< Welcome to the PHASE_C Chat Server >>>>>\n" << std::endl;
+    cout << "<<<<< Welcome to the PHASE_C Chat Server >>>>>\n" << endl;
     setConsoleColor(7); // Default
 }
 
-void printClientConnected(const std::string &clientName) {
+void printClientConnected(const string &clientName) {
     setConsoleColor(10); // Green
-    std::cout << "[+] New Client Connected: " << clientName << std::endl;
+    cout << "[+] New Client Connected: " << clientName << endl;
     setConsoleColor(7);
 }
 
-void printClientDisconnected(const std::string &clientName) {
+void printClientDisconnected(const string &clientName) {
     setConsoleColor(12); // Red
-    std::cout << "[-] Client Disconnected: " << clientName << std::endl;
+    cout << "[-] Client Disconnected: " << clientName << endl;
     setConsoleColor(7);
 }
 
-void printMessageReceived(const std::string &clientName, const std::string &message) {
+void printMessageReceived(const string &clientName, const string &message) {
     setConsoleColor(9); // Blue
-    std::cout << "[" << clientName << "]: " << message << std::endl;
+    cout << "[" << clientName << "]: " << message << endl;
     setConsoleColor(7);
 }
 
 void printServerRunning(int port) {
     setConsoleColor(11); // Cyan
-    std::cout << "Server is running on port: ";
+    cout << "Server is running on port: ";
     setConsoleColor(14); // Yellow
-    std::cout << port << std::endl;
+    cout << port << endl;
     setConsoleColor(7);
 }
 
 void printDivider() {
     setConsoleColor(8); // Gray
-    std::cout << "------------------------------------------------------------" << std::endl;
+    cout << "------------------------------------------------------------" << endl;
     setConsoleColor(7);
 }
 void handleClient(SOCKET clientSocket) {
@@ -82,22 +82,22 @@ void handleClient(SOCKET clientSocket) {
         bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
         if (bytesReceived <= 0) {
-            std::string clientName = serverUtils.getClientName(clientSocket);
+            string clientName = serverUtils.getClientName(clientSocket);
             printClientDisconnected(clientName);
             serverUtils.removeClient(clientSocket);
             closesocket(clientSocket);
             break;
         }
 
-        std::string message(buffer);
-        std::string clientName = serverUtils.getClientName(clientSocket);
+        string message(buffer);
+        string clientName = serverUtils.getClientName(clientSocket);
         printMessageReceived(clientName, message);
 
         FileUtils::appendToFile("chat_history.txt", clientName + ": " + message);
 
         // Broadcast message to other clients
         {
-            std::lock_guard<std::mutex> lock(serverUtils.getClientMutex());
+            lock_guard<mutex> lock(serverUtils.getClientMutex());
             for (auto &[socket, _] : serverUtils.getClientNames()) {
                 if (socket != clientSocket) {
                     send(socket, message.c_str(), message.length(), 0);
@@ -113,13 +113,13 @@ int main() {
     
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "WSAStartup failed!" << std::endl;
+        cerr << "WSAStartup failed!" << endl;
         return 1;
     }
     // create a socket
     SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == INVALID_SOCKET) {
-        std::cerr << "Failed to create socket." << std::endl;
+        cerr << "Failed to create socket." << endl;
         WSACleanup();
         return 1;
     }
@@ -127,14 +127,14 @@ int main() {
     sockaddr_in serverAddr = {AF_INET, htons(PORT), INADDR_ANY};
 
     if (bind(serverSocket, (sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "Bind failed!" << std::endl;
+        cerr << "Bind failed!" << endl;
         closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
     // server listeining for the sockets
     if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
-        std::cerr << "Listen failed!" << std::endl;
+        cerr << "Listen failed!" << endl;
         closesocket(serverSocket);
         WSACleanup();
         return 1;
@@ -149,7 +149,7 @@ int main() {
         SOCKET clientSocket = accept(serverSocket, (sockaddr *)&clientAddr, &clientSize);
 
         if (clientSocket == INVALID_SOCKET) {
-            std::cerr << "Accept failed!" << std::endl;
+            cerr << "Accept failed!" << endl;
             continue;
         }
 
@@ -160,7 +160,7 @@ int main() {
         printClientConnected(clientName);
         printDivider();
 
-        std::thread(handleClient, clientSocket).detach();
+        thread(handleClient, clientSocket).detach();
     }
 
     closesocket(serverSocket);
