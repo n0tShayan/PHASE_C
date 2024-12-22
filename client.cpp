@@ -27,38 +27,34 @@ cout << "\033[1;36m" << R"(
                                         |______|         
 )" << "\033[0m\n";
 
-    std::cout << "\033[1;33m<<<<< Welcome to the PHASE_C Chat Client >>>>>\033[0m\n" << std::endl;
+    cout << "\033[1;33m<<<<< Welcome to the PHASE_C Chat Client >>>>>\033[0m\n" << endl;
 }
 
 void printInstructions() {
-    std::cout << "\033[1;36mInstructions:\033[0m\n"
+    cout << "\033[1;36mInstructions:\033[0m\n"
               << " - Type your messages and press Enter to send.\n"
               << " - Type 'exit' to leave the chat.\n"
               << "\033[1;30m------------------------------------------------------------\033[0m\n";
 }
 
-void printSentMessage(const std::string &message) {
-    std::cout << "\033[1;32m[You]: \033[0m" << message << std::endl;
+void printSentMessage(const string &message) {
+    cout << "\033[1;32m[You]: \033[0m" << message << endl;
 }
 
-void printReceivedMessage(const std::string &message) {
-    std::cout << "\033[1;34m" << message << "\033[0m" << std::endl;
+void printReceivedMessage(const string &message) {
+    cout << "\033[1;34m" << message << "\033[0m" << endl;
 }
 
-void handle_server_response(SOCKET clientSocket) {
+void handleServerResponse(SOCKET clientSocket) {
     char buffer[1024];
-    int bytes_received;
-
     while (true) {
         memset(buffer, 0, sizeof(buffer));
-        bytes_received = recv(clientSocket, buffer, sizeof(buffer), 0);
-
-        if (bytes_received <= 0) {
-            cout << "Disconnected from server.\n";
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesReceived <= 0) {
+            cout << "\033[1;31mDisconnected from server.\033[0m" << endl;
             break;
         }
-
-        cout << "Server: " << buffer << endl;
+        printReceivedMessage(buffer);
     }
 }
 
