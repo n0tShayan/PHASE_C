@@ -1,22 +1,47 @@
+#include "crypto.h"
+#include "server_utils.h"
+#include "file_utils.h"
 #include <iostream>
-#include <string>
 #include <thread>
-#include <vector>
-#include <mutex>
-#include <algorithm>
 #include <winsock2.h>
+#include <windows.h>
+#include <iomanip>
 
-#pragma comment(lib, "ws2_32.lib")
 using namespace std;
 
-vector<SOCKET> clients;
-mutex clients_mutex;
+#pragma comment(lib, "ws2_32.lib")
 
-// Utility function for modular arithmetic
-int mod(int a, int b) {
-    return (a % b + b) % b;
+#define PORT 8080
+
+ServerUtils serverUtils;
+LatticeCrypto crypto(101);
+
+// Windows Console Color Utility
+void setConsoleColor(WORD color) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, color);
 }
 
+// GUI Functions
+void printBanner() {
+    setConsoleColor(11); // Cyan
+// Updated ASCII Art for Server and Client with proper escape sequences
+std::cout << "\033[1;36m" << R"(
+
+  _____  _    _           _____ ______             _____ 
+ |  __ \| |  | |   /\    / ____|  ____|           / ____|
+ | |__) | |__| |  /  \  | (___ | |__             | |     
+ |  ___/|  __  | / /\ \  \___ \|  __|            | |     
+ | |    | |  | |/ ____ \ ____) | |____           | |____ 
+ |_|    |_|  |_/_/    \_\_____/|______|           \_____|
+                                         ______          
+                                        |______|         
+)" << "\033[0m\n";
+
+    setConsoleColor(14); // Yellow
+    std::cout << "<<<<< Welcome to the PHASE_C Chat Server >>>>>\n" << std::endl;
+    setConsoleColor(7); // Default
+}
 // Lattice-based cryptographic system
 class LatticeCrypto {
 private:
