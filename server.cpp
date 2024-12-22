@@ -74,82 +74,39 @@ void printDivider() {
     std::cout << "------------------------------------------------------------" << std::endl;
     setConsoleColor(7);
 }
+void handleClient(SOCKET clientSocket) {
+    char buffer[1024];
+    int bytesReceived;
 
-// Lattice-based cryptographic system
-class LatticeCrypto {
-private:
-    vector<vector<int>> publicKey;
-    vector<vector<int>> privateKey;
-    int modulus;
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
-    // Generates a random matrix
-    vector<vector<int>> generateMatrix(int rows, int cols) {
-        vector<vector<int>> matrix(rows, vector<int>(cols));
-        for (int i = 0; i < rows; ++i)
-            for (int j = 0; j < cols; ++j)
-                matrix[i][j] = rand() % modulus;
-        return matrix;
-    }
+        if (bytesReceived <= 0) {
+            std::string clientName = serverUtils.getClientName(clientSocket);
+            printClientDisconnected(clientName);
+            serverUtils.removeClient(clientSocket);
+            closesocket(clientSocket);
+            break;
+        }
 
-    // Matrix multiplication with modular arithmetic
-    vector<vector<int>> matrixMultiply(const vector<vector<int>> &A, const vector<vector<int>> &B) {
-        int rows = A.size(), cols = B[0].size(), inner = B.size();
-        vector<vector<int>> result(rows, vector<int>(cols, 0));
+        std::string message(buffer);
+        std::string clientName = serverUtils.getClientName(clientSocket);
+        printMessageReceived(clientName, message);
 
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                for (int k = 0; k < inner; ++k) {
-                    result[i][j] = mod(result[i][j] + A[i][k] * B[k][j], modulus);
+        FileUtils::appendToFile("chat_history.txt", clientName + ": " + message);
+
+        // Broadcast message to other clients
+        {
+            std::lock_guard<std::mutex> lock(serverUtils.getClientMutex());
+            for (auto &[socket, _] : serverUtils.getClientNames()) {
+                if (socket != clientSocket) {
+                    send(socket, message.c_str(), message.length(), 0);
                 }
             }
         }
-        return result;
     }
-
-    // Adds randomness to a matrix
-    vector<vector<int>> addNoise(const vector<vector<int>> &matrix) {
-        vector<vector<int>> noisyMatrix = matrix;
-        for (auto &row : noisyMatrix) {
-            for (auto &val : row) {
-                val = mod(val + (rand() % 10), modulus); // Add small random noise
-            }
-        }
-        return noisyMatrix;
-    }
-
-public:
-    LatticeCrypto(int mod) : modulus(mod) {
-        srand(time(0));
-    }
-
-    void generateKeys(int size) {
-        privateKey = generateMatrix(size, size);
-        publicKey = generateMatrix(size, size);
-        cout << "Keys generated successfully.\n";
-    }
-
-    vector<vector<int>> encrypt(const vector<int> &plaintext) {
-        vector<vector<int>> plainVec(plaintext.size(), vector<int>(1));
-        for (int i = 0; i < plaintext.size(); ++i) {
-            plainVec[i][0] = plaintext[i];
-        }
-        auto encrypted = matrixMultiply(publicKey, plainVec);
-        return addNoise(encrypted); // Add randomness
-    }
-
-    vector<int> decrypt(const vector<vector<int>> &ciphertext) {
-        vector<vector<int>> decryptedMatrix = matrixMultiply(privateKey, ciphertext);
-        vector<int> plaintext;
-        for (const auto &row : decryptedMatrix) {
-            plaintext.push_back(row[0]);
-        }
-        return plaintext;
-    }
-
-    const vector<vector<int>>& getPublicKey() const {
-        return publicKey;
-    }
-};
+}
 
 // Server-side code
 vector<SOCKET> clients;
