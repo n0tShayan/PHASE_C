@@ -108,106 +108,63 @@ void handleClient(SOCKET clientSocket) {
     }
 }
 
-// Server-side code
-vector<SOCKET> clients;
-mutex clients_mutex;
-LatticeCrypto crypto(101);
-
-void sendPublicKey(SOCKET client_socket) {
-    const auto& publicKey = crypto.getPublicKey();
-    for (const auto& row : publicKey) {
-        for (int val : row) {
-            send(client_socket, reinterpret_cast<const char*>(&val), sizeof(val), 0);
-        }
-    }
-}
-
-void handle_client(SOCKET client_socket) {
-    char buffer[1024];
-    int bytes_received;
-
-    while (true) {
-        memset(buffer, 0, sizeof(buffer));
-        bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
-
-        if (bytes_received <= 0) {
-            lock_guard<mutex> lock(clients_mutex);
-            clients.erase(remove(clients.begin(), clients.end(), client_socket), clients.end());
-            closesocket(client_socket);
-            cout << "Client disconnected.\n";
-            break;
-        }
-
-        cout << "Received message: " << buffer << endl;
-
-        // Echo the message back to the client
-        lock_guard<mutex> lock(clients_mutex);
-        for (SOCKET client : clients) {
-            if (client != client_socket) {
-                send(client, buffer, bytes_received, 0);
-            }
-        }
-    }
-}
 
 int main() {
-    WSADATA wsa_data;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
-        cerr << "WSAStartup failed.\n";
+    printBanner();
+    
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        std::cerr << "WSAStartup failed!" << std::endl;
         return 1;
     }
 
-    SOCKET server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket == INVALID_SOCKET) {
-        cerr << "Socket creation failed.\n";
+    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSocket == INVALID_SOCKET) {
+        std::cerr << "Failed to create socket." << std::endl;
         WSACleanup();
         return 1;
     }
 
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(8080);
+    sockaddr_in serverAddr = {AF_INET, htons(PORT), INADDR_ANY};
 
-    if (bind(server_socket, (sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
-        cerr << "Bind failed.\n";
-        closesocket(server_socket);
+    if (bind(serverSocket, (sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
+        std::cerr << "Bind failed!" << std::endl;
+        closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
-    if (listen(server_socket, SOMAXCONN) == SOCKET_ERROR) {
-        cerr << "Listen failed.\n";
-        closesocket(server_socket);
+    if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
+        std::cerr << "Listen failed!" << std::endl;
+        closesocket(serverSocket);
         WSACleanup();
         return 1;
     }
 
     crypto.generateKeys(3);
-    cout << "Server started on port 8080...\n";
+    printServerRunning(PORT);
 
     while (true) {
-        sockaddr_in client_addr;
-        int client_size = sizeof(client_addr);
-        SOCKET client_socket = accept(server_socket, (sockaddr*)&client_addr, &client_size);
+        sockaddr_in clientAddr;
+        int clientSize = sizeof(clientAddr);
+        SOCKET clientSocket = accept(serverSocket, (sockaddr *)&clientAddr, &clientSize);
 
-        if (client_socket == INVALID_SOCKET) {
-            cerr << "Accept failed.\n";
+        if (clientSocket == INVALID_SOCKET) {
+            std::cerr << "Accept failed!" << std::endl;
             continue;
         }
 
-        {
-            lock_guard<mutex> lock(clients_mutex);
-            clients.push_back(client_socket);
-        }
+        char clientName[50] = {0};
+        recv(clientSocket, clientName, sizeof(clientName), 0);
+        serverUtils.registerClient(clientSocket, clientName);
 
-        cout << "New client connected. Sending public key.\n";
-        sendPublicKey(client_socket);
+        printClientConnected(clientName);
+        printDivider();
 
-        thread(handle_client, client_socket).detach();
+        std::thread(handleClient, clientSocket).detach();
     }
 
-    closesocket(server_socket);
+    closesocket(serverSocket);
     WSACleanup();
     return 0;
 }
