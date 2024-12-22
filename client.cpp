@@ -12,6 +12,39 @@
 using namespace std;
 #define PORT 8080
 
+// GUI Functions
+void printBanner() {
+// Updated ASCII Art for Server and Client with proper escape sequences
+cout << "\033[1;36m" << R"(
+
+  _____  _    _           _____ ______             _____ 
+ |  __ \| |  | |   /\    / ____|  ____|           / ____|
+ | |__) | |__| |  /  \  | (___ | |__             | |     
+ |  ___/|  __  | / /\ \  \___ \|  __|            | |     
+ | |    | |  | |/ ____ \ ____) | |____           | |____ 
+ |_|    |_|  |_/_/    \_\_____/|______|           \_____|
+                                         ______          
+                                        |______|         
+)" << "\033[0m\n";
+
+    std::cout << "\033[1;33m<<<<< Welcome to the PHASE_C Chat Client >>>>>\033[0m\n" << std::endl;
+}
+
+void printInstructions() {
+    std::cout << "\033[1;36mInstructions:\033[0m\n"
+              << " - Type your messages and press Enter to send.\n"
+              << " - Type 'exit' to leave the chat.\n"
+              << "\033[1;30m------------------------------------------------------------\033[0m\n";
+}
+
+void printSentMessage(const std::string &message) {
+    std::cout << "\033[1;32m[You]: \033[0m" << message << std::endl;
+}
+
+void printReceivedMessage(const std::string &message) {
+    std::cout << "\033[1;34m" << message << "\033[0m" << std::endl;
+}
+
 void handle_server_response(SOCKET clientSocket) {
     char buffer[1024];
     int bytes_received;
