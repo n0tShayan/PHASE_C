@@ -22,10 +22,8 @@ void setConsoleColor(WORD color) {
     SetConsoleTextAttribute(hConsole, color);
 }
 
-// GUI Functions
 void printBanner() {
-    setConsoleColor(11); // Cyan
-// Updated ASCII Art for Server and Client with proper escape sequences
+    setConsoleColor(11); 
 std::cout << "\033[1;36m" << R"(
 
   _____  _    _           _____ ______             _____ 
