@@ -1,29 +1,58 @@
 //Adding a file for Cryptographic Encryption
+#include "crypto.h"
+#include <iostream>
+#include <stdexcept>
 
-#ifndef CRYPTO_H
-#define CRYPTO_H
+// Constructor
+LatticeCrypto::LatticeCrypto(int mod) : modulus(mod) {
+    if (modulus <= 0) {
+        throw std::invalid_argument("Modulus must be positive");
+    }
+    std::srand(std::time(nullptr));
+}
 
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
+// Generates a random matrix of given dimensions
+std::vector<std::vector<int>> LatticeCrypto::generateMatrix(int rows, int cols) {
+    std::vector<std::vector<int>> matrix(rows, std::vector<int>(cols));
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            matrix[i][j] = std::rand() % modulus;
+        }
+    }
+    return matrix;
+}
 
-class LatticeCrypto {
-private:
-    std::vector<std::vector<int>> publicKey;
-    std::vector<std::vector<int>> privateKey;
-    int modulus;
+// Multiplies two matrices
+std::vector<std::vector<int>> LatticeCrypto::matrixMultiply(
+    const std::vector<std::vector<int>> &A,
+    const std::vector<std::vector<int>> &B) {
+    int rowsA = A.size(), colsA = A[0].size(), colsB = B[0].size();
+    std::vector<std::vector<int>> result(rowsA, std::vector<int>(colsB, 0));
 
-    std::vector<std::vector<int>> generateMatrix(int rows, int cols);
-    std::vector<std::vector<int>> matrixMultiply(const std::vector<std::vector<int>> &A, const std::vector<std::vector<int>> &B);
-    std::vector<std::vector<int>> addNoise(const std::vector<std::vector<int>> &matrix);
+    for (int i = 0; i < rowsA; ++i) {
+        for (int j = 0; j < colsB; ++j) {
+            for (int k = 0; k < colsA; ++k) {
+                result[i][j] = (result[i][j] + A[i][k] * B[k][j]) % modulus;
+            }
+        }
+    }
+    return result;
+}
 
-public:
-    LatticeCrypto(int mod);
-    void generateKeys(int size);
-    std::vector<std::vector<int>> encrypt(const std::vector<int> &plaintext);
-    std::vector<int> decrypt(const std::vector<std::vector<int>> &ciphertext);
-    const std::vector<std::vector<int>> &getPublicKey() const;
-};
+// Adds random noise to a matrix
+std::vector<std::vector<int>> LatticeCrypto::addNoise(
+    const std::vector<std::vector<int>> &matrix) {
+    std::vector<std::vector<int>> noisyMatrix = matrix;
+    for (auto &row : noisyMatrix) {
+        for (auto &value : row) {
+            value = (value + std::rand() % 5 - 2 + modulus) % modulus; // Adds small noise
+        }
+    }
+    return noisyMatrix;
+}
 
-#endif
+// Generates public and private keys
+void LatticeCrypto::generateKeys(int size) {
+    privateKey = generateMatrix(size, size);
+    publicKey = addNoise(matrixMultiply(privateKey, privateKey));
+}
