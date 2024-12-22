@@ -1,3 +1,4 @@
+//adding the libraries and our defined header files
 #include "crypto.h"
 #include "server_utils.h"
 #include "file_utils.h"
@@ -16,16 +17,14 @@ using namespace std;
 ServerUtils serverUtils;
 LatticeCrypto crypto(101);
 
-// Windows Console Color Utility
+
 void setConsoleColor(WORD color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, color);
 }
 
-// GUI Functions
 void printBanner() {
-    setConsoleColor(11); // Cyan
-// Updated ASCII Art for Server and Client with proper escape sequences
+    setConsoleColor(11); 
 std::cout << "\033[1;36m" << R"(
 
   _____  _    _           _____ ______             _____ 
@@ -117,7 +116,7 @@ int main() {
         std::cerr << "WSAStartup failed!" << std::endl;
         return 1;
     }
-
+    // create a socket
     SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (serverSocket == INVALID_SOCKET) {
         std::cerr << "Failed to create socket." << std::endl;
@@ -133,7 +132,7 @@ int main() {
         WSACleanup();
         return 1;
     }
-
+    // server listeining for the sockets
     if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR) {
         std::cerr << "Listen failed!" << std::endl;
         closesocket(serverSocket);
