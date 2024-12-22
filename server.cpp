@@ -61,6 +61,20 @@ void printMessageReceived(const std::string &clientName, const std::string &mess
     setConsoleColor(7);
 }
 
+void printServerRunning(int port) {
+    setConsoleColor(11); // Cyan
+    std::cout << "Server is running on port: ";
+    setConsoleColor(14); // Yellow
+    std::cout << port << std::endl;
+    setConsoleColor(7);
+}
+
+void printDivider() {
+    setConsoleColor(8); // Gray
+    std::cout << "------------------------------------------------------------" << std::endl;
+    setConsoleColor(7);
+}
+
 // Lattice-based cryptographic system
 class LatticeCrypto {
 private:
