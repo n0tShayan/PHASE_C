@@ -42,6 +42,25 @@ std::cout << "\033[1;36m" << R"(
     std::cout << "<<<<< Welcome to the PHASE_C Chat Server >>>>>\n" << std::endl;
     setConsoleColor(7); // Default
 }
+
+void printClientConnected(const std::string &clientName) {
+    setConsoleColor(10); // Green
+    std::cout << "[+] New Client Connected: " << clientName << std::endl;
+    setConsoleColor(7);
+}
+
+void printClientDisconnected(const std::string &clientName) {
+    setConsoleColor(12); // Red
+    std::cout << "[-] Client Disconnected: " << clientName << std::endl;
+    setConsoleColor(7);
+}
+
+void printMessageReceived(const std::string &clientName, const std::string &message) {
+    setConsoleColor(9); // Blue
+    std::cout << "[" << clientName << "]: " << message << std::endl;
+    setConsoleColor(7);
+}
+
 // Lattice-based cryptographic system
 class LatticeCrypto {
 private:
