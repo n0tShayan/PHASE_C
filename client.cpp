@@ -60,6 +60,9 @@ int main() {
     printBanner();
     printInstructions();
 
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+
     SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in serverAddr = {AF_INET, htons(PORT), 0};
     serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
