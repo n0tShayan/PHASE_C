@@ -38,7 +38,6 @@ Asad Shayan | Yahya Qadeer Dar | Rayyan Hassan Salman
 3. Build the project:  
    ```bash  
    compile the code:  
-   ```bash
     g++ server.cpp server_utils.cpp crypto.cpp -o server -lws2_32
      g++ client.cpp -o client -lws2_32
 
