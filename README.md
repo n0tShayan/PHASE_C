@@ -1,7 +1,7 @@
 # PHASE_C  
 
 **Developed by**  
-Asad Shayan | Yahya Qadeer Dar | Rayyan Hassan Salman  | mkc teri qasim riaz
+Asad Shayan | Yahya Qadeer Dar | Rayyan Hassan Salman  
 
 ---
 
